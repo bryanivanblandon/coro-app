@@ -1,0 +1,1 @@
+Contenido de ejemplo para README.txt
