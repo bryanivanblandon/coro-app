@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agenda de Cantos - Coro Santa Cecilia</title>
+  <title>Coro Santa Cecilia - Agenda de Cantos</title>
   <link rel="stylesheet" href="styles.css" />
-  <script defer src="app.js"></script>
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 </head>
 <body>
   <header>
@@ -18,16 +17,32 @@
   </header>
 
   <main>
-    <form id="cantoForm">
-      <input type="text" id="titulo" placeholder="Título del canto" required />
-      <textarea id="letra" placeholder="Letra del canto con acordes..." required></textarea>
-      <input type="file" id="partitura" accept=".pdf,.jpg,.png" />
+    <form id="cantoForm" style="display:none;">
+      <label for="titulo">Título del canto:</label>
+      <input type="text" id="titulo" name="titulo" required />
+
+      <label for="letra">Letra con acordes:</label>
+      <textarea id="letra" name="letra" rows="6"></textarea>
+
+      <label for="partitura">Partitura (PDF o imagen):</label>
+      <input type="file" id="partitura" accept="application/pdf,image/*" />
+
+      <label for="audio">Audio del canto (mp3):</label>
       <input type="file" id="audio" accept="audio/*" />
+
       <button type="submit">Guardar</button>
     </form>
 
-    <div id="cantosList"></div>
-    <button id="exportPDF">Exportar a PDF</button>
+    <section id="cantosList">
+      <h2>Cantos registrados</h2>
+      <!-- Aquí se mostrarán los cantos -->
+    </section>
   </main>
+
+  <footer>
+    <p>Colores del Coro Santa Cecilia · App conectada a Firebase</p>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
