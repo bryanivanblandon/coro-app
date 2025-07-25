@@ -12,30 +12,75 @@
 </head>
 <body>
   <header>
+    <img src="logo.png" alt="Logo Coro Santa Cecilia" style="height: 60px; vertical-align: middle;">
     <h1>Coro Santa Cecilia</h1>
-    <h2>Agenda de Cantos Dominicales</h2>
+    <nav>
+      <button onclick="mostrarSeccion('inicio')">Inicio</button>
+      <button onclick="mostrarSeccion('formulario')">Agregar Canto</button>
+      <button onclick="mostrarSeccion('lista')">Ver Cantos</button>
+      <button onclick="mostrarSeccion('agenda')">Agenda</button>
+    </nav>
   </header>
 
   <main>
-    <form id="cantoForm" style="display:none;">
-      <label for="titulo">Título del canto:</label>
-      <input type="text" id="titulo" name="titulo" required />
+    <section id="inicio">
+      <h2>Bienvenido a la Agenda de Cantos Dominicales</h2>
+      <p>Selecciona una opción en la barra de navegación.</p>
+    </section>
 
-      <label for="letra">Letra con acordes:</label>
-      <textarea id="letra" name="letra" rows="6"></textarea>
+    <section id="formulario" style="display:none;">
+      <form id="cantoForm">
+        <label for="titulo">Título del canto:</label>
+        <input type="text" id="titulo" name="titulo" required />
 
-      <label for="partitura">Partitura (PDF o imagen):</label>
-      <input type="file" id="partitura" accept="application/pdf,image/*" />
+        <label for="letra">Letra con acordes (usa [C], [G], etc.):</label>
+        <textarea id="letra" name="letra" rows="6"></textarea>
 
-      <label for="audio">Audio del canto (mp3):</label>
-      <input type="file" id="audio" accept="audio/*" />
+        <label for="partitura">Partitura (PDF o imagen):</label>
+        <input type="file" id="partitura" accept="application/pdf,image/*" />
 
-      <button type="submit">Guardar</button>
-    </form>
+        <label for="audio">Audio del canto (mp3):</label>
+        <input type="file" id="audio" accept="audio/*" />
 
-    <section id="cantosList">
-      <h2>Cantos registrados</h2>
-      <!-- Aquí se mostrarán los cantos -->
+        <button type="submit">Guardar</button>
+      </form>
+    </section>
+
+    <section id="lista" style="display:none;">
+      <h2>Buscar cantos</h2>
+      <input type="text" id="busqueda" placeholder="Buscar por título..." oninput="filtrarCantos()" />
+      <label for="transporte">Transponer acordes:</label>
+      <select id="transporte" onchange="transponerSeleccion()">
+        <option value="0">Sin cambio</option>
+        <option value="1">+1 semitono</option>
+        <option value="2">+2 semitonos</option>
+        <option value="-1">-1 semitono</option>
+        <option value="-2">-2 semitonos</option>
+      </select>
+      <div id="cantosList"></div>
+    </section>
+
+    <section id="agenda" style="display:none;">
+      <h2>Armar Agenda</h2>
+      <form id="agendaForm">
+        <label for="fecha">Fecha del domingo:</label>
+        <input type="date" id="fecha" name="fecha" required />
+
+        <label for="entrada">Canto de Entrada:</label>
+        <input type="text" id="entrada" name="entrada" />
+
+        <label for="ofertorio">Canto de Ofertorio:</label>
+        <input type="text" id="ofertorio" name="ofertorio" />
+
+        <label for="comunion">Canto de Comunión:</label>
+        <input type="text" id="comunion" name="comunion" />
+
+        <label for="salida">Canto de Salida:</label>
+        <input type="text" id="salida" name="salida" />
+
+        <button type="submit">Guardar Agenda</button>
+      </form>
+      <div id="agendasList"></div>
     </section>
   </main>
 
