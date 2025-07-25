@@ -1,1 +1,39 @@
-Contenido de ejemplo para styles.css
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 2rem;
+  background-color: #201A30;
+  color: #f4f4f4;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+form {
+  background: #2c243b;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
+
+input, textarea, button {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.7rem;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  background: #d87f2a;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #b0641f;
+}
