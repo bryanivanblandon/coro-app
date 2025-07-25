@@ -1,1 +1,33 @@
-Contenido de ejemplo para index.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda de Cantos - Coro Santa Cecilia</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Coro Santa Cecilia</h1>
+    <h2>Agenda de Cantos Dominicales</h2>
+  </header>
+
+  <main>
+    <form id="cantoForm">
+      <input type="text" id="titulo" placeholder="Título del canto" required />
+      <textarea id="letra" placeholder="Letra del canto con acordes..." required></textarea>
+      <input type="file" id="partitura" accept=".pdf,.jpg,.png" />
+      <input type="file" id="audio" accept="audio/*" />
+      <button type="submit">Guardar</button>
+    </form>
+
+    <div id="cantosList"></div>
+    <button id="exportPDF">Exportar a PDF</button>
+  </main>
+</body>
+</html>
