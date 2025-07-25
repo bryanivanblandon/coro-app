@@ -1,5 +1,21 @@
 // Firebase Configuración y lógica de la app
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBTHoPbE7OoqUyiUlLUwnwmOVTTtrXaiTk",
+  authDomain: "coro-santa-cecilia.firebaseapp.com",
+  projectId: "coro-santa-cecilia",
+  storageBucket: "coro-santa-cecilia.firebasestorage.app",
+  messagingSenderId: "35222391277",
+  appId: "1:35222391277:web:3720752d606ece4a92ffe4"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 // 1. Reemplaza esta configuración con la de tu proyecto de Firebase
 const firebaseConfig = {
   apiKey: "TU_API_KEY",
