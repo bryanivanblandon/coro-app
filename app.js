@@ -13,90 +13,129 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
-const auth = firebase.auth();
 
-const cantoForm = document.getElementById("cantoForm");
-const listaCantos = document.getElementById("cantosList");
-
-// Mostrar formulario solo si hay usuario autenticado
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    document.getElementById("cantoForm").style.display = "block";
-  } else {
-    document.getElementById("cantoForm").style.display = "none";
-    const loginBtn = document.createElement("button");
-    loginBtn.textContent = "Iniciar sesión para editar";
-    loginBtn.onclick = login;
-    document.body.prepend(loginBtn);
-  }
-});
-
-// Login con correo electrónico (popup)
-function login() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider)
-    .then((result) => {
-      alert(`Bienvenido, ${result.user.displayName}`);
-    })
-    .catch((error) => {
-      alert("Error al iniciar sesión: " + error.message);
-    });
+function mostrarSeccion(id) {
+  const secciones = document.querySelectorAll("main section");
+  secciones.forEach(sec => sec.style.display = "none");
+  document.getElementById(id).style.display = "block";
 }
 
-// Manejar envío del formulario
-cantoForm.addEventListener("submit", async (e) => {
+// Guardar canto
+document.getElementById("cantoForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const titulo = document.getElementById("titulo").value;
   const letra = document.getElementById("letra").value;
-  const partitura = document.getElementById("partitura").files[0];
-  const audio = document.getElementById("audio").files[0];
+  const partituraFile = document.getElementById("partitura").files[0];
+  const audioFile = document.getElementById("audio").files[0];
 
-  let partituraURL = "";
-  let audioURL = "";
+  const cantoRef = await db.collection("cantos").add({ titulo, letra, fecha: new Date() });
+  const id = cantoRef.id;
 
-  if (partitura) {
-    const partituraRef = storage.ref(`partituras/${partitura.name}`);
-    await partituraRef.put(partitura);
-    partituraURL = await partituraRef.getDownloadURL();
+  if (partituraFile) {
+    const partRef = storage.ref().child(`partituras/${id}_${partituraFile.name}`);
+    await partRef.put(partituraFile);
+    const url = await partRef.getDownloadURL();
+    await cantoRef.update({ partituraUrl: url });
+  }
+  if (audioFile) {
+    const audRef = storage.ref().child(`audios/${id}_${audioFile.name}`);
+    await audRef.put(audioFile);
+    const url = await audRef.getDownloadURL();
+    await cantoRef.update({ audioUrl: url });
   }
 
-  if (audio) {
-    const audioRef = storage.ref(`audios/${audio.name}`);
-    await audioRef.put(audio);
-    audioURL = await audioRef.getDownloadURL();
-  }
-
-  await db.collection("cantos").add({
-    titulo,
-    letra,
-    partituraURL,
-    audioURL,
-    autor: firebase.auth().currentUser.email,
-    timestamp: new Date()
-  });
-
-  cantoForm.reset();
-  mostrarCantos();
+  alert("Canto guardado correctamente");
+  document.getElementById("cantoForm").reset();
+  cargarCantos();
 });
 
-// Mostrar cantos
-async function mostrarCantos() {
-  listaCantos.innerHTML = "";
-  const snapshot = await db.collection("cantos").orderBy("timestamp", "desc").get();
-  snapshot.forEach((doc) => {
+// Cargar cantos
+async function cargarCantos() {
+  const contenedor = document.getElementById("cantosList");
+  contenedor.innerHTML = "";
+  const snapshot = await db.collection("cantos").orderBy("fecha", "desc").get();
+  snapshot.forEach(doc => {
     const data = doc.data();
     const div = document.createElement("div");
-    div.className = "canto";
     div.innerHTML = `
       <h3>${data.titulo}</h3>
       <pre>${data.letra}</pre>
-      ${data.partituraURL ? `<a href="${data.partituraURL}" target="_blank">Ver Partitura</a>` : ""}
-      ${data.audioURL ? `<audio controls src="${data.audioURL}"></audio>` : ""}
-      <small><i>Subido por: ${data.autor || "Anónimo"}</i></small>
+      ${data.partituraUrl ? `<a href="${data.partituraUrl}" target="_blank">Ver Partitura</a>` : ""}
+      ${data.audioUrl ? `<audio controls src="${data.audioUrl}"></audio>` : ""}
+      <hr>
     `;
-    listaCantos.appendChild(div);
+    contenedor.appendChild(div);
   });
 }
 
-// Inicial
-mostrarCantos();
+// Buscar y filtrar cantos
+function filtrarCantos() {
+  const filtro = document.getElementById("busqueda").value.toLowerCase();
+  const cantos = document.querySelectorAll("#cantosList > div");
+  cantos.forEach(div => {
+    const texto = div.textContent.toLowerCase();
+    div.style.display = texto.includes(filtro) ? "block" : "none";
+  });
+}
+
+// Transponer acordes
+function transponerSeleccion() {
+  const semitonos = parseInt(document.getElementById("transporte").value);
+  if (semitonos === 0) return cargarCantos();
+  const cantos = document.querySelectorAll("#cantosList > div pre");
+  cantos.forEach(pre => {
+    pre.textContent = transponer(pre.textContent, semitonos);
+  });
+}
+
+const notas = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+function transponer(texto, cambio) {
+  return texto.replace(/\[([A-G]#?)\]/g, (_, acorde) => {
+    let i = notas.indexOf(acorde);
+    if (i < 0) return `[${acorde}]`;
+    return `[${notas[(i + cambio + 12) % 12]}]`;
+  });
+}
+
+// Guardar agenda
+document.getElementById("agendaForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const agenda = {
+    fecha: document.getElementById("fecha").value,
+    entrada: document.getElementById("entrada").value,
+    ofertorio: document.getElementById("ofertorio").value,
+    comunion: document.getElementById("comunion").value,
+    salida: document.getElementById("salida").value
+  };
+  await db.collection("agendas").add(agenda);
+  alert("Agenda guardada correctamente");
+  document.getElementById("agendaForm").reset();
+  cargarAgendas();
+});
+
+async function cargarAgendas() {
+  const lista = document.getElementById("agendasList");
+  lista.innerHTML = "";
+  const snap = await db.collection("agendas").orderBy("fecha", "desc").get();
+  snap.forEach(doc => {
+    const a = doc.data();
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <h4>Agenda ${a.fecha}</h4>
+      <ul>
+        <li><strong>Entrada:</strong> ${a.entrada}</li>
+        <li><strong>Ofertorio:</strong> ${a.ofertorio}</li>
+        <li><strong>Comunión:</strong> ${a.comunion}</li>
+        <li><strong>Salida:</strong> ${a.salida}</li>
+      </ul><hr>
+    `;
+    lista.appendChild(div);
+  });
+}
+
+// Inicializar
+window.onload = () => {
+  mostrarSeccion("inicio");
+  cargarCantos();
+  cargarAgendas();
+};
